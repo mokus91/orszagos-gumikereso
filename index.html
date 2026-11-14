@@ -1,0 +1,269 @@
+# orszagos-gumikereso
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Országos Gumikereső</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    color: #222;
+}
+
+header {
+    background: #101820;
+    color: white;
+    text-align: center;
+    padding: 25px 12px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 27px;
+}
+
+header p { color: #ccc; }
+
+.search {
+    background: white;
+    padding: 22px;
+    margin: 20px auto;
+    max-width: 700px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 7px 0;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 17px;
+}
+
+button {
+    background: #e63920;
+    color: white;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.product {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px #ddd;
+}
+
+.product h3 { color: #222; }
+
+.price {
+    font-size: 23px;
+    color: #e63920;
+    font-weight: bold;
+}
+
+.cart {
+    background: #101820;
+    color: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🛞 ORSZÁGOS GUMIKERESŐ</h1>
+<p>Autógumik országosan, kedvező áron!</p>
+</header>
+
+<section class="search">
+<h2>🔎 Keress gumiméret alapján!</h2>
+
+<input id="width" placeholder="Szélesség (pl. 205)">
+<input id="profile" placeholder="Profil (pl. 55)">
+<input id="diameter" placeholder="Átmérő (pl. 16)">
+
+<button onclick="searchTires()">GUMIK KERESÉSE</button>
+<button onclick="showAll()">Összes gumi</button>
+</section>
+
+<h2 style="text-align:center">Elérhető gumik</h2>
+
+<div class="products" id="products"></div>
+
+<section class="cart">
+<h2>🛒 Bevásárlókosár</h2>
+<div id="cart">A kosár üres.</div>
+<h3 id="total">Végösszeg: 0 Ft</h3>
+</section>
+
+<footer>
+© 2026 Országos Gumikereső
+</footer>
+
+<script>
+
+const HASZON = 2500;
+
+const tires = [
+{
+brand: "Michelin",
+name: "Primacy 4",
+size: "205/55 R16",
+base: 20000
+},
+{
+brand: "Continental",
+name: "PremiumContact",
+size: "205/55 R16",
+base: 22000
+},
+{
+brand: "Goodyear",
+name: "EfficientGrip",
+size: "195/65 R15",
+base: 18000
+},
+{
+brand: "Bridgestone",
+name: "Turanza",
+size: "225/45 R17",
+base: 25000
+},
+{
+brand: "Hankook",
+name: "Ventus Prime",
+size: "205/55 R16",
+base: 19000
+}
+];
+
+let basket = [];
+
+function displayTires(list) {
+
+const container = document.getElementById("products");
+container.innerHTML = "";
+
+if (list.length === 0) {
+container.innerHTML = "<p>Nem található ilyen méretű gumi.</p>";
+return;
+}
+
+list.forEach((tire) => {
+
+let price = tire.base + HASZON;
+
+container.innerHTML += `
+<div class="product">
+<h3>${tire.brand}</h3>
+<p>${tire.name}</p>
+<p><b>${tire.size}</b></p>
+<div class="price">${price.toLocaleString("hu-HU")} Ft/db</div>
+<button onclick="addToCart('${tire.brand}', '${tire.name}', ${price})">
+Kosárba teszem
+</button>
+</div>
+`;
+
+});
+
+}
+
+function searchTires() {
+
+let w = document.getElementById("width").value.trim();
+let p = document.getElementById("profile").value.trim();
+let d = document.getElementById("diameter").value.trim();
+
+let size = `${w}/${p} R${d}`;
+
+let result = tires.filter(t => t.size === size);
+
+displayTires(result);
+
+}
+
+function showAll() {
+displayTires(tires);
+}
+
+function addToCart(brand, name, price) {
+
+basket.push({brand, name, price});
+
+updateCart();
+
+}
+
+function updateCart() {
+
+let container = document.getElementById("cart");
+let total = 0;
+
+container.innerHTML = "";
+
+basket.forEach((item, index) => {
+
+total += item.price;
+
+container.innerHTML += `
+<p>
+${item.brand} ${item.name} -
+${item.price.toLocaleString("hu-HU")} Ft
+<button onclick="removeItem(${index})">X</button>
+</p>
+`;
+
+});
+
+if (basket.length === 0) {
+container.innerHTML = "A kosár üres.";
+}
+
+document.getElementById("total").innerText =
+"Végösszeg: " + total.toLocaleString("hu-HU") + " Ft";
+
+}
+
+function removeItem(index) {
+basket.splice(index, 1);
+updateCart();
+}
+
+displayTires(tires);
+
+</script>
+
+</body>
+</html>
