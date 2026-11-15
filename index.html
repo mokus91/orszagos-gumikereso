@@ -4,104 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Országos Gumikereső</title>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f2f4f7;
-    color: #222;
-}
-
-header {
-    background: #101820;
-    color: white;
-    text-align: center;
-    padding: 30px 12px;
-}
-
-header h1 { margin: 0; }
-
-.search {
-    background: white;
-    padding: 22px;
-    margin: 20px auto;
-    max-width: 700px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-input, select {
-    width: 100%;
-    padding: 14px;
-    margin: 7px 0;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    font-size: 17px;
-}
-
-button {
-    background: #e63920;
-    color: white;
-    border: none;
-    padding: 13px 20px;
-    border-radius: 7px;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 5px;
-}
-
-button:hover { background: #bd2917; }
-
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    padding: 15px;
-    max-width: 1100px;
-    margin: auto;
-}
-
-.product {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 8px #ddd;
-}
-
-.price {
-    font-size: 23px;
-    color: #e63920;
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-.cart {
-    background: #101820;
-    color: white;
-    margin: 20px;
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.notice {
-    text-align: center;
-    color: #777;
-    padding: 10px;
-    font-size: 13px;
-}
-
-footer {
-    text-align: center;
-    padding: 25px;
-    color: #777;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f2f4f7;color:#222}
+header{background:#101820;color:white;text-align:center;padding:25px 12px}
+.search{background:white;padding:20px;margin:20px auto;max-width:700px;border-radius:12px;text-align:center}
+input,select{width:100%;padding:13px;margin:7px 0;border:1px solid #ccc;border-radius:7px;font-size:16px}
+button{background:#e63920;color:white;border:0;padding:12px 18px;border-radius:7px;font-size:16px;cursor:pointer;margin:5px}
+button:hover{background:#bd2917}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;padding:15px;max-width:1100px;margin:auto}
+.product{background:white;padding:20px;border-radius:12px;text-align:center;box-shadow:0 2px 8px #ddd}
+.tyre{font-size:55px}
+.price{font-size:22px;color:#e63920;font-weight:bold;margin:15px 0}
+.cart{background:#101820;color:white;margin:20px;padding:20px;border-radius:12px}
+.order{background:white;color:#222;padding:18px;border-radius:10px;margin-top:15px}
+.order h3{margin-top:0}
+.notice{text-align:center;color:#777;padding:10px;font-size:13px}
+footer{text-align:center;padding:25px;color:#777}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -110,213 +31,186 @@ footer {
 </header>
 
 <section class="search">
-
 <h2>🔎 Keress gumiméret alapján!</h2>
-
 <input id="width" type="number" placeholder="Szélesség (pl. 205)">
 <input id="profile" type="number" placeholder="Profil (pl. 55)">
 <input id="diameter" type="number" placeholder="Átmérő (pl. 16)">
-
 <select id="season">
 <option value="">Minden évszak</option>
 <option value="Nyári">Nyári</option>
 <option value="Téli">Téli</option>
 <option value="Négyévszakos">Négyévszakos</option>
 </select>
-
 <button onclick="searchTires()">GUMIK KERESÉSE</button>
 <button onclick="showAll()">Összes gumi</button>
-
 </section>
 
 <h2 style="text-align:center">Elérhető gumik</h2>
-
 <div class="products" id="products"></div>
 
 <p class="notice">
-A termékek és árak jelenleg tesztadatok.
-Nem jelentenek valós beszállítói készletet vagy ajánlatot.
+A termékek és árak jelenleg tesztadatok, nem valós beszállítói készletadatok.
 </p>
 
 <section class="cart">
-
 <h2>🛒 Bevásárlókosár</h2>
-
 <div id="cart">A kosár üres.</div>
-
 <h3 id="total">Végösszeg: 0 Ft</h3>
 
+<div class="order">
+<h3>📧 Rendelés elküldése</h3>
+<p>A rendelés elküldése nem jár fizetési kötelezettséggel.</p>
+<input id="customerName" placeholder="Teljes név">
+<input id="customerPhone" type="tel" placeholder="Telefonszám">
+<input id="customerAddress" placeholder="Szállítási cím (nem kötelező)">
+<button onclick="sendOrder()">RENDELÉSI IGÉNY ELKÜLDÉSE</button>
+</div>
 </section>
 
-<footer>
-© 2026 Országos Gumikereső
-</footer>
+<footer>© 2026 Országos Gumikereső</footer>
 
 <script>
-
 const HASZON = 2500;
+const ORDER_EMAIL = "csabikatoth25@gmail.com";
 
 const tires = [
-
 {id:1,brand:"Michelin",name:"Primacy 4+",size:"205/55 R16",season:"Nyári",base:28500},
 {id:2,brand:"Continental",name:"PremiumContact 7",size:"205/55 R16",season:"Nyári",base:27900},
 {id:3,brand:"Goodyear",name:"EfficientGrip 2",size:"205/55 R16",season:"Nyári",base:26500},
 {id:4,brand:"Hankook",name:"Ventus Prime 4",size:"205/55 R16",season:"Nyári",base:23500},
 {id:5,brand:"Barum",name:"Bravuris 5HM",size:"195/65 R15",season:"Nyári",base:19800},
-
 {id:6,brand:"Michelin",name:"Alpin 7",size:"205/55 R16",season:"Téli",base:32000},
 {id:7,brand:"Continental",name:"WinterContact TS870",size:"205/55 R16",season:"Téli",base:29800},
 {id:8,brand:"Goodyear",name:"UltraGrip Performance 3",size:"195/65 R15",season:"Téli",base:28500},
 {id:9,brand:"Hankook",name:"Winter i*cept RS3",size:"205/55 R16",season:"Téli",base:24500},
 {id:10,brand:"Barum",name:"Polaris 6",size:"225/45 R17",season:"Téli",base:21000},
-
 {id:11,brand:"Michelin",name:"CrossClimate 2",size:"205/55 R16",season:"Négyévszakos",base:31500},
 {id:12,brand:"Continental",name:"AllSeasonContact 2",size:"205/55 R16",season:"Négyévszakos",base:29000},
 {id:13,brand:"Goodyear",name:"Vector 4Seasons Gen-3",size:"195/65 R15",season:"Négyévszakos",base:27500},
 {id:14,brand:"Hankook",name:"Kinergy 4S2",size:"225/45 R17",season:"Négyévszakos",base:24000},
 {id:15,brand:"Bridgestone",name:"Turanza All Season 6",size:"205/55 R16",season:"Négyévszakos",base:30500}
-
 ];
 
 let basket = [];
 
-function displayTires(list) {
-
-const container = document.getElementById("products");
-container.innerHTML = "";
-
-if (list.length === 0) {
-container.innerHTML = "<p>Nem található ilyen méretű gumi.</p>";
+function displayTires(list){
+const container=document.getElementById("products");
+container.innerHTML="";
+if(list.length===0){
+container.innerHTML="<p>Nem található ilyen méretű gumi.</p>";
 return;
 }
-
-list.forEach(tire => {
-
-const price = tire.base + HASZON;
-
-container.innerHTML += `
+list.forEach(tire=>{
+const price=tire.base+HASZON;
+container.innerHTML+=`
 <div class="product">
-
+<div class="tyre">🛞</div>
 <h3>${tire.brand}</h3>
-
 <p>${tire.name}</p>
-
 <p><b>${tire.size}</b></p>
-
 <p>${tire.season} gumi</p>
-
-<div class="price">
-${price.toLocaleString("hu-HU")} Ft/db
-</div>
-
-<button data-id="${tire.id}">
-Kosárba teszem
-</button>
-
-</div>
-`;
-
+<div class="price">${price.toLocaleString("hu-HU")} Ft/db</div>
+<button data-id="${tire.id}">Kosárba teszem</button>
+</div>`;
 });
-
-container.querySelectorAll("button[data-id]").forEach(button => {
-button.addEventListener("click", () => {
+container.querySelectorAll("button[data-id]").forEach(button=>{
+button.addEventListener("click",()=>{
 addToCart(Number(button.dataset.id));
 });
 });
-
 }
 
-function searchTires() {
-
-const w = document.getElementById("width").value.trim();
-const p = document.getElementById("profile").value.trim();
-const d = document.getElementById("diameter").value.trim();
-const season = document.getElementById("season").value;
-
-if (!w || !p || !d) {
+function searchTires(){
+const w=document.getElementById("width").value.trim();
+const p=document.getElementById("profile").value.trim();
+const d=document.getElementById("diameter").value.trim();
+const season=document.getElementById("season").value;
+if(!w||!p||!d){
 alert("Kérlek, töltsd ki mindhárom gumiméretet!");
 return;
 }
-
-const size = `${w}/${p} R${d}`;
-
-const result = tires.filter(tire =>
-tire.size === size &&
-(!season || tire.season === season)
-);
-
-displayTires(result);
-
+const size=`${w}/${p} R${d}`;
+displayTires(tires.filter(t=>t.size===size&&(!season||t.season===season)));
 }
 
-function showAll() {
-
-document.getElementById("width").value = "";
-document.getElementById("profile").value = "";
-document.getElementById("diameter").value = "";
-document.getElementById("season").value = "";
-
+function showAll(){
+document.getElementById("width").value="";
+document.getElementById("profile").value="";
+document.getElementById("diameter").value="";
+document.getElementById("season").value="";
 displayTires(tires);
-
 }
 
-function addToCart(id) {
-
-const tire = tires.find(t => t.id === id);
-
-if (!tire) return;
-
+function addToCart(id){
+const tire=tires.find(t=>t.id===id);
+if(!tire)return;
 basket.push({
-brand: tire.brand,
-name: tire.name,
-price: tire.base + HASZON
+brand:tire.brand,
+name:tire.name,
+size:tire.size,
+price:tire.base+HASZON
 });
-
 updateCart();
-
 }
 
-function updateCart() {
-
-const container = document.getElementById("cart");
-let total = 0;
-
-container.innerHTML = "";
-
-basket.forEach((item, index) => {
-
-total += item.price;
-
-container.innerHTML += `
-<p>
-${item.brand} ${item.name} -
+function updateCart(){
+const container=document.getElementById("cart");
+let total=0;
+container.innerHTML="";
+basket.forEach((item,index)=>{
+total+=item.price;
+container.innerHTML+=`
+<p>${item.brand} ${item.name} (${item.size}) -
 ${item.price.toLocaleString("hu-HU")} Ft
+<button onclick="removeItem(${index})">Törlés</button></p>`;
+});
+if(basket.length===0)container.innerHTML="A kosár üres.";
+document.getElementById("total").innerText=
+"Végösszeg: "+total.toLocaleString("hu-HU")+" Ft";
+}
 
-<button onclick="removeItem(${index})">X</button>
-</p>
-`;
+function removeItem(index){
+basket.splice(index,1);
+updateCart();
+}
 
+function sendOrder(){
+if(basket.length===0){
+alert("A kosár üres!");
+return;
+}
+
+const name=document.getElementById("customerName").value.trim();
+const phone=document.getElementById("customerPhone").value.trim();
+const address=document.getElementById("customerAddress").value.trim();
+
+if(!name||!phone){
+alert("Kérlek, add meg a nevedet és a telefonszámodat!");
+return;
+}
+
+let total=0;
+let orderText="ÚJ RENDELÉSI IGÉNY\n\n";
+orderText+="Név: "+name+"\n";
+orderText+="Telefon: "+phone+"\n";
+orderText+="Cím: "+(address||"Nincs megadva")+"\n\n";
+orderText+="RENDELT TERMÉKEK:\n";
+
+basket.forEach((item,index)=>{
+total+=item.price;
+orderText+=(index+1)+". "+item.brand+" "+item.name+
+" - "+item.size+" - "+item.price.toLocaleString("hu-HU")+" Ft\n";
 });
 
-if (basket.length === 0) {
-container.innerHTML = "A kosár üres.";
-}
+orderText+="\nVégösszeg: "+total.toLocaleString("hu-HU")+" Ft\n";
+orderText+="\nEz fizetési kötelezettség nélküli rendelési igény.";
 
-document.getElementById("total").innerText =
-"Végösszeg: " + total.toLocaleString("hu-HU") + " Ft";
-
-}
-
-function removeItem(index) {
-
-basket.splice(index, 1);
-updateCart();
-
+const subject=encodeURIComponent("Új rendelési igény - Országos Gumikereső");
+const body=encodeURIComponent(orderText);
+window.location.href="mailto:"+ORDER_EMAIL+"?subject="+subject+"&body="+body;
 }
 
 displayTires(tires);
-
 </script>
-
 </body>
 </html>
